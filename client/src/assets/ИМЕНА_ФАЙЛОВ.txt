@@ -1,0 +1,13 @@
+Рекомендуемые имена .webp (можно положить в src/ или src/assets/):
+
+glav.webp          — главный баннер (hero)
+building.webp      — блок «Надёжный сервис»
+interior.webp      — фото интерьера / команда
+sky.webp           — фон формы на «Контактах»
+object1.webp … object8.webp — карточки объектов
+news1.webp … news9.webp     — новости
+portfolio1.webp … portfolio4.webp — сетка на главной
+agent.webp         — фото риелтора на странице объекта
+team.webp          — аватар в блоке отзыва
+
+Любые другие имена тоже подхватятся автоматически.

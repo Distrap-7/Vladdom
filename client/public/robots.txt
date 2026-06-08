@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /favorites
+Disallow: /my-applications
+Disallow: /account
+Disallow: /cabinet
+Disallow: /cart
+
+Host: vladdom.ru
+
+Sitemap: https://vladdom.ru/sitemap.xml
