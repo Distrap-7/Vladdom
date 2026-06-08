@@ -1,28 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || ''
+import { createClient } from '@supabase/supabase-js'
 
-function getToken() {
-  return localStorage.getItem('vladdom_token')
-}
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-export function setToken(token) {
-  if (token) {
-    localStorage.setItem('vladdom_token', token)
-  } else {
-    localStorage.removeItem('vladdom_token')
-  }
-}
-
-export async function api(path, options = {}) {
-  const token = getToken()
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    ...options,
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Request failed')
-  return data
-}
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)

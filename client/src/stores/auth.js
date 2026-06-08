@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { api, setToken } from '../utils/supabase'
+import { supabase } from '../utils/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -18,8 +18,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function initialize() {
     loading.value = true
     try {
-      const data = await api('/api/auth/session')
-      user.value = data.user
+      const { data: { user: u } } = await supabase.auth.getUser()
+      user.value = u
     } catch {
       user.value = null
     }
@@ -27,32 +27,27 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(email, password) {
-    const data = await api('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    })
-    setToken(data.session?.access_token)
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw new Error(error.message)
     user.value = data.user
     return data
   }
 
   async function register(name, phone, email, password) {
-    const data = await api('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ name, phone, email, password }),
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name, phone } },
     })
-    if (data.session?.access_token) {
-      setToken(data.session.access_token)
+    if (error) throw new Error(error.message)
+    if (data.user) {
       user.value = data.user
     }
     return data
   }
 
   async function logout() {
-    try {
-      await api('/api/auth/logout', { method: 'POST' })
-    } catch {}
-    setToken(null)
+    await supabase.auth.signOut()
     user.value = null
   }
 

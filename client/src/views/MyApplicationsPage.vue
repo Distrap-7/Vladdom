@@ -102,7 +102,7 @@ onMounted(async () => {
     return
   }
   try {
-    applications.value = await applicationsStore.fetchUserApplications()
+    applications.value = await applicationsStore.fetchUserApplications(authStore.userPhone)
   } catch (e) {
     error.value = 'Не удалось загрузить заявки'
   } finally {
