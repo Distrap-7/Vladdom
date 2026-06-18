@@ -36,34 +36,25 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '../../utils/supabase'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-const token = () => supabase.auth.getSession().then(({ data }) => data.session?.access_token)
+import { api } from '../../utils/api'
 
 const stats = ref({ properties: 0, news: 0, applications: 0, users: 0 })
 
 async function fetchAll() {
   try {
-    const t = await token()
-    const headers = t ? { Authorization: `Bearer ${t}` } : {}
-
     const [props, news, apps, users] = await Promise.all([
-      fetch(`${API}/api/admin/properties`, { headers }).then(r => r.json()),
-      fetch(`${API}/api/admin/news`, { headers }).then(r => r.json()),
-      fetch(`${API}/api/admin/applications`, { headers }).then(r => r.json()),
-      fetch(`${API}/api/admin/users`, { headers }).then(r => r.json()),
+      api('/api/admin/properties'),
+      api('/api/admin/news'),
+      api('/api/admin/applications'),
+      api('/api/admin/users'),
     ])
-
     stats.value = {
       properties: Array.isArray(props) ? props.length : 0,
       news: Array.isArray(news) ? news.length : 0,
       applications: Array.isArray(apps) ? apps.length : 0,
       users: Array.isArray(users) ? users.length : 0,
     }
-  } catch (e) {
-    console.error('Dashboard fetch error', e)
-  }
+  } catch (e) { console.error('Dashboard fetch error', e) }
 }
 
 onMounted(fetchAll)

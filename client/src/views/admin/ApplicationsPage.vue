@@ -51,13 +51,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '../../utils/supabase'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-const headers = async () => {
-  const { data } = await supabase.auth.getSession()
-  return { Authorization: `Bearer ${data.session?.access_token}` }
-}
+import { api } from '../../utils/api'
 
 const items = ref([])
 const loading = ref(true)
@@ -82,18 +76,16 @@ function formatDate(dateStr) {
 async function fetchItems() {
   loading.value = true
   try {
-    const res = await fetch(`${API}/api/admin/applications`, { headers: await headers() })
-    items.value = await res.json()
+    items.value = await api('/api/admin/applications')
   } catch (e) { console.error(e) }
   loading.value = false
 }
 
 async function changeStatus(item, status) {
   try {
-    await fetch(`${API}/api/admin/applications/${item.id}`, {
+    await api(`/api/admin/applications/${item.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...(await headers()) },
-      body: JSON.stringify({ status }),
+      body: { status },
     })
     item.status = status
   } catch (e) { console.error(e) }
@@ -102,10 +94,7 @@ async function changeStatus(item, status) {
 async function confirmDelete(item) {
   if (!confirm(`Удалить заявку #${item.id}?`)) return
   try {
-    await fetch(`${API}/api/admin/applications/${item.id}`, {
-      method: 'DELETE',
-      headers: await headers(),
-    })
+    await api(`/api/admin/applications/${item.id}`, { method: 'DELETE' })
     await fetchItems()
   } catch (e) { console.error(e) }
 }

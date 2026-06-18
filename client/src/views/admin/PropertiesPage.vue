@@ -77,13 +77,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '../../utils/supabase'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-const headers = async () => {
-  const { data } = await supabase.auth.getSession()
-  return { Authorization: `Bearer ${data.session?.access_token}` }
-}
+import { api } from '../../utils/api'
 
 const items = ref([])
 const loading = ref(true)
@@ -108,8 +102,7 @@ function formatPrice(p) {
 async function fetchItems() {
   loading.value = true
   try {
-    const res = await fetch(`${API}/api/admin/properties`, { headers: await headers() })
-    items.value = await res.json()
+    items.value = await api('/api/admin/properties')
   } catch (e) { console.error(e) }
   loading.value = false
 }
@@ -129,16 +122,14 @@ function openEdit(item) {
 async function save() {
   try {
     if (editing.value) {
-      await fetch(`${API}/api/admin/properties/${editing.value.id}`, {
+      await api(`/api/admin/properties/${editing.value.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...(await headers()) },
-        body: JSON.stringify(form.value),
+        body: form.value,
       })
     } else {
-      await fetch(`${API}/api/admin/properties`, {
+      await api('/api/admin/properties', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await headers()) },
-        body: JSON.stringify(form.value),
+        body: form.value,
       })
     }
     showForm.value = false
@@ -149,10 +140,7 @@ async function save() {
 async function confirmDelete(item) {
   if (!confirm(`Удалить "${item.title}"?`)) return
   try {
-    await fetch(`${API}/api/admin/properties/${item.id}`, {
-      method: 'DELETE',
-      headers: await headers(),
-    })
+    await api(`/api/admin/properties/${item.id}`, { method: 'DELETE' })
     await fetchItems()
   } catch (e) { console.error(e) }
 }

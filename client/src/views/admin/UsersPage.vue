@@ -43,13 +43,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '../../utils/supabase'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-const headers = async () => {
-  const { data } = await supabase.auth.getSession()
-  return { Authorization: `Bearer ${data.session?.access_token}` }
-}
+import { api } from '../../utils/api'
 
 const users = ref([])
 const loading = ref(true)
@@ -65,15 +59,9 @@ function formatDate(dateStr) {
 async function fetchUsers() {
   loading.value = true
   try {
-    const res = await fetch(`${API}/api/admin/users`, { headers: await headers() })
-    if (!res.ok) {
-      const { error: msg } = await res.json()
-      error.value = msg || 'Ошибка загрузки'
-      return
-    }
-    users.value = await res.json()
+    users.value = await api('/api/admin/users')
   } catch (e) {
-    error.value = 'Не удалось загрузить пользователей'
+    error.value = e.message || 'Не удалось загрузить пользователей'
   }
   loading.value = false
 }
@@ -81,18 +69,10 @@ async function fetchUsers() {
 async function confirmDelete(user) {
   if (!confirm(`Удалить пользователя ${user.email}?`)) return
   try {
-    const res = await fetch(`${API}/api/admin/users/${user.id}`, {
-      method: 'DELETE',
-      headers: await headers(),
-    })
-    if (!res.ok) {
-      const { error: msg } = await res.json()
-      alert(msg || 'Ошибка удаления')
-      return
-    }
+    await api(`/api/admin/users/${user.id}`, { method: 'DELETE' })
     await fetchUsers()
   } catch (e) {
-    alert('Ошибка удаления')
+    alert(e.message || 'Ошибка удаления')
   }
 }
 
