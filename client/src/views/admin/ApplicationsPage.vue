@@ -5,6 +5,7 @@
     </header>
 
     <section v-if="loading" class="admin-loading">Загрузка...</section>
+    <section v-else-if="dbError" class="admin-error">{{ dbError }}</section>
 
     <section v-else class="admin-table-wrap">
       <table class="admin-table">
@@ -51,52 +52,35 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { api } from '../../utils/api'
+import { fetchApplications, updateApplicationStatus, deleteApplication } from '../../stores/admin'
 
 const items = ref([])
 const loading = ref(true)
+const dbError = ref('')
 
-const typeLabels = {
-  consultation: 'Консультация',
-  purchase: 'Покупка',
-  sale: 'Продажа',
-  mortgage: 'Ипотечный брокер',
-  legal: 'Юридическая проверка',
-}
+const typeLabels = { consultation: 'Консультация', purchase: 'Покупка', sale: 'Продажа', mortgage: 'Ипотечный брокер', legal: 'Юридическая проверка' }
 function typeLabel(t) { return typeLabels[t] || t }
-
 function formatDate(dateStr) {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
-    day: 'numeric', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
+  return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 async function fetchItems() {
-  loading.value = true
-  try {
-    items.value = await api('/api/admin/applications')
-  } catch (e) { console.error(e) }
+  loading.value = true; dbError.value = ''
+  try { items.value = await fetchApplications() }
+  catch (e) { dbError.value = e.message }
   loading.value = false
 }
 
 async function changeStatus(item, status) {
-  try {
-    await api(`/api/admin/applications/${item.id}`, {
-      method: 'PUT',
-      body: { status },
-    })
-    item.status = status
-  } catch (e) { console.error(e) }
+  try { await updateApplicationStatus(item.id, status); item.status = status }
+  catch (e) { alert(e.message) }
 }
 
 async function confirmDelete(item) {
   if (!confirm(`Удалить заявку #${item.id}?`)) return
-  try {
-    await api(`/api/admin/applications/${item.id}`, { method: 'DELETE' })
-    await fetchItems()
-  } catch (e) { console.error(e) }
+  try { await deleteApplication(item.id); await fetchItems() }
+  catch (e) { alert(e.message) }
 }
 
 onMounted(fetchItems)
@@ -104,18 +88,7 @@ onMounted(fetchItems)
 
 <style>
 @import '../../styles/admin-shared.css';
-
-.admin-status-select {
-  padding: 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.admin-cell-truncate {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.admin-status-select { padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; }
+.admin-cell-truncate { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-error { background: #ffebee; color: #c62828; padding: 16px 20px; border-radius: 8px; }
 </style>

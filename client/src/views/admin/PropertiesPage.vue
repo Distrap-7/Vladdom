@@ -6,6 +6,7 @@
     </header>
 
     <section v-if="loading" class="admin-loading">Загрузка...</section>
+    <section v-else-if="dbError" class="admin-error">{{ dbError }}</section>
 
     <section v-else class="admin-table-wrap">
       <table class="admin-table">
@@ -61,10 +62,7 @@
             </select>
           </label>
           <label>Ключ фото (imageKey)<input v-model="form.imageKey" placeholder="house, room, ..." /></label>
-          <label>
-            Описание
-            <textarea v-model="form.description" rows="3"></textarea>
-          </label>
+          <label>Описание<textarea v-model="form.description" rows="3"></textarea></label>
           <section class="admin-modal__actions">
             <button type="button" class="admin-btn" @click="showForm = false">Отмена</button>
             <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
@@ -77,10 +75,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { api } from '../../utils/api'
+import { fetchProperties, createProperty, updateProperty, deleteProperty } from '../../stores/admin'
 
 const items = ref([])
 const loading = ref(true)
+const dbError = ref('')
 const showForm = ref(false)
 const editing = ref(null)
 
@@ -89,60 +88,35 @@ const defaultForm = {
   rooms: 1, floor: 1, totalFloors: 1, district: '', microdistrict: '',
   type: 'apartment', imageKey: '', description: '',
 }
-
 const form = ref({ ...defaultForm })
 
 const typeLabels = { apartment: 'Квартира', townhouse: 'Таунхаус', house: 'Дом' }
 function typeLabel(t) { return typeLabels[t] || t }
-
-function formatPrice(p) {
-  return new Intl.NumberFormat('ru-RU').format(p) + ' ₽'
-}
+function formatPrice(p) { return new Intl.NumberFormat('ru-RU').format(p) + ' ₽' }
 
 async function fetchItems() {
-  loading.value = true
-  try {
-    items.value = await api('/api/admin/properties')
-  } catch (e) { console.error(e) }
+  loading.value = true; dbError.value = ''
+  try { items.value = await fetchProperties() }
+  catch (e) { dbError.value = e.message }
   loading.value = false
 }
 
-function openCreate() {
-  editing.value = null
-  form.value = { ...defaultForm }
-  showForm.value = true
-}
-
-function openEdit(item) {
-  editing.value = item
-  form.value = { ...item }
-  showForm.value = true
-}
+function openCreate() { editing.value = null; form.value = { ...defaultForm }; showForm.value = true }
+function openEdit(item) { editing.value = item; form.value = { ...item }; showForm.value = true }
 
 async function save() {
   try {
-    if (editing.value) {
-      await api(`/api/admin/properties/${editing.value.id}`, {
-        method: 'PUT',
-        body: form.value,
-      })
-    } else {
-      await api('/api/admin/properties', {
-        method: 'POST',
-        body: form.value,
-      })
-    }
+    if (editing.value) await updateProperty(editing.value.id, form.value)
+    else await createProperty(form.value)
     showForm.value = false
     await fetchItems()
-  } catch (e) { console.error(e) }
+  } catch (e) { alert(e.message) }
 }
 
 async function confirmDelete(item) {
   if (!confirm(`Удалить "${item.title}"?`)) return
-  try {
-    await api(`/api/admin/properties/${item.id}`, { method: 'DELETE' })
-    await fetchItems()
-  } catch (e) { console.error(e) }
+  try { await deleteProperty(item.id); await fetchItems() }
+  catch (e) { alert(e.message) }
 }
 
 onMounted(fetchItems)
@@ -150,4 +124,5 @@ onMounted(fetchItems)
 
 <style>
 @import '../../styles/admin-shared.css';
+.admin-error { background: #ffebee; color: #c62828; padding: 16px 20px; border-radius: 8px; }
 </style>
