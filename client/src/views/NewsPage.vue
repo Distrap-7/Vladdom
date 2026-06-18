@@ -32,7 +32,18 @@ import Pagination from '../components/common/Pagination.vue'
 import { img, imgAny, BUILDING_IMAGE, INTERIOR_IMAGE } from '../utils/images'
 
 const currentPage = ref(1)
-const authorAvatar = imgAny('avatar', 'team', 'agent') || BUILDING_IMAGE
+
+const agentAvatars = [
+  img('мужик'),
+  img('nodirbek'),
+  img('vladimir'),
+  img('мужик'),
+  img('nodirbek'),
+  img('vladimir'),
+  img('мужик'),
+  img('nodirbek'),
+  img('vladimir'),
+]
 
 const newsList = [
   {
@@ -42,9 +53,9 @@ const newsList = [
     title: 'Владивосток стал лидером по росту цен на жильё в ДФО',
     excerpt: 'Средняя стоимость квадратного метра в городе выросла на 12% за последний год.',
     date: 'April 30, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Алексей Соколов',
     image: imgAny('news1', 'news-1') || BUILDING_IMAGE,
-    authorAvatar,
+    authorAvatar: agentAvatars[0],
   },
   {
     id: 2,
@@ -53,9 +64,9 @@ const newsList = [
     title: 'Открытие нового жилого комплекса «Морской берег»',
     excerpt: 'В Ленинском районе запущен в эксплуатацию новый ЖК на 500 квартир.',
     date: 'April 25, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Нодирбек Каримов',
     image: imgAny('news2', 'news-2') || INTERIOR_IMAGE,
-    authorAvatar,
+    authorAvatar: agentAvatars[1],
   },
   {
     id: 3,
@@ -64,9 +75,9 @@ const newsList = [
     title: 'Ипотечные ставки снижены до рекордного минимума',
     excerpt: 'Сбербанк и ВТБ предлагают ипотеку под 8,5% годовых для жителей Приморья.',
     date: 'April 20, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Владимир Петров',
     image: imgAny('news3', 'news-3') || img('object1'),
-    authorAvatar,
+    authorAvatar: agentAvatars[2],
   },
   {
     id: 4,
@@ -75,9 +86,9 @@ const newsList = [
     title: 'Реконструкция центра Владивостока завершена',
     excerpt: 'Обновлённая Светланская улица стала пешеходной зоной с новыми скверами.',
     date: 'April 15, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Алексей Соколов',
     image: imgAny('news4', 'news-4') || img('object2'),
-    authorAvatar,
+    authorAvatar: agentAvatars[3],
   },
   {
     id: 5,
@@ -86,9 +97,9 @@ const newsList = [
     title: 'Власти Приморья субсидируют ипотеку для молодых семей',
     excerpt: 'Молодые семьи могут получить до 500 тыс. рублей на первоначальный взнос.',
     date: 'April 10, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Нодирбек Каримов',
     image: imgAny('news5', 'news-5') || img('object3'),
-    authorAvatar,
+    authorAvatar: agentAvatars[4],
   },
   {
     id: 6,
@@ -97,9 +108,9 @@ const newsList = [
     title: 'Новый транспортный узел в районе Второй речки',
     excerpt: 'Планируется строительство транспортно-пересадочного узла и новых дорог.',
     date: 'April 5, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Владимир Петров',
     image: imgAny('news6', 'news-6') || img('object4'),
-    authorAvatar,
+    authorAvatar: agentAvatars[5],
   },
   {
     id: 7,
@@ -108,9 +119,9 @@ const newsList = [
     title: 'Спрос на апартаменты у моря вырос на 18%',
     excerpt: 'Покупатели всё чаще выбирают жильё с видом на залив и готовой отделкой.',
     date: 'March 28, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Алексей Соколов',
     image: imgAny('news7', 'news-7') || img('object5'),
-    authorAvatar,
+    authorAvatar: agentAvatars[6],
   },
   {
     id: 8,
@@ -119,9 +130,9 @@ const newsList = [
     title: 'Обзор загородного рынка Приморья',
     excerpt: 'Коттеджи и таунхаусы: где растут цены быстрее всего.',
     date: 'March 20, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Нодирбек Каримов',
     image: imgAny('news8', 'news-8') || img('object6'),
-    authorAvatar,
+    authorAvatar: agentAvatars[7],
   },
   {
     id: 9,
@@ -130,9 +141,9 @@ const newsList = [
     title: 'Как проверить юридическую чистоту квартиры',
     excerpt: 'Чек-лист документов и рисков перед подписанием договора.',
     date: 'March 12, 2024',
-    author: 'Эксперт по недвижимости',
+    author: 'Владимир Петров',
     image: imgAny('news9', 'news-9') || img('object7'),
-    authorAvatar,
+    authorAvatar: agentAvatars[8],
   },
 ]
 </script>

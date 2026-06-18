@@ -267,9 +267,6 @@ const processSteps = [
   },
 ]
 
-const newsImagePrimary = img('section5') || BUILDING_IMAGE
-const newsImageSecondary = img('section5_1') || newsImagePrimary
-
 const newsPreview = [
   {
     id: 1,
@@ -278,9 +275,9 @@ const newsPreview = [
     readTime: '5 min read',
     excerpt: 'Разбираем динамику цен и что влияет на рынок недвижимости сейчас.',
     date: 'April 30, 2025',
-    author: 'Эксперт по недвижимости',
-    image: newsImagePrimary,
-    authorAvatar: newsImageSecondary,
+    author: 'Алексей Соколов',
+    image: imgAny('news1', 'news-1') || BUILDING_IMAGE,
+    authorAvatar: img('мужик') || BUILDING_IMAGE,
   },
   {
     id: 2,
@@ -289,9 +286,9 @@ const newsPreview = [
     readTime: '5 min read',
     excerpt: 'Ключевые факторы, которые важно учитывать перед покупкой',
     date: 'April 30, 2025',
-    author: 'Аналитик рынка',
-    image: newsImagePrimary,
-    authorAvatar: newsImageSecondary,
+    author: 'Нодирбек Каримов',
+    image: imgAny('news2', 'news-2') || INTERIOR_IMAGE,
+    authorAvatar: img('nodirbek') || INTERIOR_IMAGE,
   },
   {
     id: 3,
@@ -300,9 +297,9 @@ const newsPreview = [
     readTime: '5 min read',
     excerpt: 'Сравниваем районы по цене, инфраструктуре и перспективам.',
     date: 'April 30, 2025',
-    author: 'Команда проекта',
-    image: newsImagePrimary,
-    authorAvatar: newsImageSecondary,
+    author: 'Владимир Петров',
+    image: imgAny('news3', 'news-3') || img('object1'),
+    authorAvatar: img('vladimir') || INTERIOR_IMAGE,
   },
 ]
 </script>

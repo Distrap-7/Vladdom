@@ -1,0 +1,148 @@
+<template>
+  <section class="admin-page">
+    <header class="admin-page__header">
+      <h1 class="admin-title">Новости</h1>
+      <button class="admin-btn admin-btn--primary" @click="openCreate">+ Добавить</button>
+    </header>
+
+    <section v-if="loading" class="admin-loading">Загрузка...</section>
+
+    <section v-else class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Заголовок</th>
+            <th>Тег</th>
+            <th>Автор</th>
+            <th>Дата</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in items" :key="item.id">
+            <td>{{ item.id }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.tag }}</td>
+            <td>{{ item.author }}</td>
+            <td>{{ item.date }}</td>
+            <td class="admin-actions">
+              <button class="admin-btn admin-btn--sm" @click="openEdit(item)">✏️</button>
+              <button class="admin-btn admin-btn--sm admin-btn--danger" @click="confirmDelete(item)">🗑️</button>
+            </td>
+          </tr>
+          <tr v-if="!items.length">
+            <td colspan="6" class="admin-empty">Нет новостей</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section v-if="showForm" class="admin-modal" @click.self="showForm = false">
+      <section class="admin-modal__body">
+        <h2>{{ editing ? 'Редактировать' : 'Добавить' }} новость</h2>
+        <form @submit.prevent="save">
+          <label>Заголовок *<input v-model="form.title" required /></label>
+          <label>Тег<input v-model="form.tag" placeholder="Новости, Аналитика, Гид" /></label>
+          <label>Время чтения<input v-model="form.readTime" placeholder="5 min read" /></label>
+          <label>Краткое описание<textarea v-model="form.excerpt" rows="2"></textarea></label>
+          <label>Дата *<input v-model="form.date" type="date" required /></label>
+          <label>Автор *<input v-model="form.author" required /></label>
+          <label>Ключ фото (image)<input v-model="form.image" placeholder="news1, news2, ..." /></label>
+          <label>Ключ аватара автора (authorAvatar)<input v-model="form.authorAvatar" placeholder="мужик, nodirbek, vladimir, ..." /></label>
+          <section class="admin-modal__actions">
+            <button type="button" class="admin-btn" @click="showForm = false">Отмена</button>
+            <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+          </section>
+        </form>
+      </section>
+    </section>
+  </section>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { supabase } from '../../utils/supabase'
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const headers = async () => {
+  const { data } = await supabase.auth.getSession()
+  return { Authorization: `Bearer ${data.session?.access_token}` }
+}
+
+const items = ref([])
+const loading = ref(true)
+const showForm = ref(false)
+const editing = ref(null)
+
+const defaultForm = {
+  title: '', tag: 'Новости', readTime: '5 min read',
+  excerpt: '', date: '', author: '',
+  image: '', authorAvatar: '',
+}
+
+const form = ref({ ...defaultForm })
+
+async function fetchItems() {
+  loading.value = true
+  try {
+    const res = await fetch(`${API}/api/admin/news`, { headers: await headers() })
+    items.value = await res.json()
+  } catch (e) { console.error(e) }
+  loading.value = false
+}
+
+function openCreate() {
+  editing.value = null
+  form.value = { ...defaultForm }
+  showForm.value = true
+}
+
+function openEdit(item) {
+  editing.value = item
+  form.value = { ...item }
+  showForm.value = true
+}
+
+async function save() {
+  try {
+    const body = {
+      ...form.value,
+      tag: form.value.tag || 'Новости',
+      readTime: form.value.readTime || '5 min read',
+    }
+    if (editing.value) {
+      await fetch(`${API}/api/admin/news/${editing.value.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...(await headers()) },
+        body: JSON.stringify(body),
+      })
+    } else {
+      await fetch(`${API}/api/admin/news`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await headers()) },
+        body: JSON.stringify(body),
+      })
+    }
+    showForm.value = false
+    await fetchItems()
+  } catch (e) { console.error(e) }
+}
+
+async function confirmDelete(item) {
+  if (!confirm(`Удалить новость "${item.title}"?`)) return
+  try {
+    await fetch(`${API}/api/admin/news/${item.id}`, {
+      method: 'DELETE',
+      headers: await headers(),
+    })
+    await fetchItems()
+  } catch (e) { console.error(e) }
+}
+
+onMounted(fetchItems)
+</script>
+
+<style>
+@import '../../styles/admin-shared.css';
+</style>

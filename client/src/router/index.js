@@ -74,6 +74,43 @@ const routes = [
     component: () => import('../views/MyApplicationsPage.vue'),
   },
   {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: () => import('../views/admin/LoginPage.vue'),
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/admin/AdminLayout.vue'),
+    meta: { requiresAdmin: true },
+    children: [
+      {
+        path: '',
+        name: 'AdminDashboard',
+        component: () => import('../views/admin/DashboardPage.vue'),
+      },
+      {
+        path: 'properties',
+        name: 'AdminProperties',
+        component: () => import('../views/admin/PropertiesPage.vue'),
+      },
+      {
+        path: 'news',
+        name: 'AdminNews',
+        component: () => import('../views/admin/NewsPage.vue'),
+      },
+      {
+        path: 'applications',
+        name: 'AdminApplications',
+        component: () => import('../views/admin/ApplicationsPage.vue'),
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('../views/admin/UsersPage.vue'),
+      },
+    ],
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFoundPage.vue'),
@@ -91,8 +128,15 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+
+  if (to.meta.requiresAdmin) {
+    if (!authStore.user) {
+      return next({ name: 'AdminLogin' })
+    }
+    return next()
+  }
 
   if ((to.name === 'Favorites' || to.name === 'MyApplications') && !authStore.user) {
     next({ name: 'Auth' })

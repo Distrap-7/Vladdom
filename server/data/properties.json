@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "2-комнатная квартира, 52 м²",
+    "buildingName": "ЖК «Атлантис»",
+    "address": "ул. Светланская, 120",
+    "price": 9500000,
+    "area": 52,
+    "rooms": 2,
+    "floor": 7,
+    "totalFloors": 18,
+    "view": "город",
+    "features": ["чистовая отделка", "тёплый пол", "кондиционер"],
+    "district": "Ленинский",
+    "microdistrict": "Центр",
+    "type": "apartment",
+    "dealType": "sale",
+    "completionDate": "2024",
+    "yearBuilt": 2024,
+    "kitchenArea": 12,
+    "imageKey": "house",
+    "description": "Просторная квартира в новом жилом комплексе в центре города. Панорамные окна, свободная планировка.",
+    "createdAt": "2025-01-15T08:00:00Z",
+    "createdBy": ""
+  }
+]
