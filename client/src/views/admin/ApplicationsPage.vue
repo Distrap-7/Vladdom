@@ -5,7 +5,11 @@
     </header>
 
     <section v-if="loading" class="admin-loading">Загрузка...</section>
-    <section v-else-if="dbError" class="admin-error">{{ dbError }}</section>
+
+    <section v-else-if="error" class="admin-error">
+      <p>{{ error }}</p>
+      <p class="admin-error__hint">Возможно, нужно добавить RLS политику в Supabase — SQL в файле <code>supabase-schema.sql</code></p>
+    </section>
 
     <section v-else class="admin-table-wrap">
       <table class="admin-table">
@@ -56,7 +60,7 @@ import { fetchApplications, updateApplicationStatus, deleteApplication } from '.
 
 const items = ref([])
 const loading = ref(true)
-const dbError = ref('')
+const error = ref('')
 
 const typeLabels = { consultation: 'Консультация', purchase: 'Покупка', sale: 'Продажа', mortgage: 'Ипотечный брокер', legal: 'Юридическая проверка' }
 function typeLabel(t) { return typeLabels[t] || t }
@@ -66,9 +70,9 @@ function formatDate(dateStr) {
 }
 
 async function fetchItems() {
-  loading.value = true; dbError.value = ''
+  loading.value = true; error.value = ''
   try { items.value = await fetchApplications() }
-  catch (e) { dbError.value = e.message }
+  catch (e) { error.value = e.message }
   loading.value = false
 }
 
@@ -90,5 +94,7 @@ onMounted(fetchItems)
 @import '../../styles/admin-shared.css';
 .admin-status-select { padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; }
 .admin-cell-truncate { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.admin-error { background: #ffebee; color: #c62828; padding: 16px 20px; border-radius: 8px; }
+.admin-error { background: #ffebee; color: #c62828; padding: 20px 24px; border-radius: 12px; font-size: 14px; }
+.admin-error__hint { font-size: 12px; opacity: 0.7; margin-top: 8px; }
+.admin-error__hint code { background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 3px; }
 </style>
