@@ -15,9 +15,6 @@
         <router-link to="/admin/applications" class="admin-nav__link" active-class="active">
           <span>📋</span> Заявки
         </router-link>
-        <router-link to="/admin/users" class="admin-nav__link" active-class="active">
-          <span>👥</span> Пользователи
-        </router-link>
       </nav>
       <section class="admin-sidebar__footer">
         <router-link to="/" class="admin-nav__link">← На сайт</router-link>

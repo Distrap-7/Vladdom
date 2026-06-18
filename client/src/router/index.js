@@ -103,11 +103,7 @@ const routes = [
         name: 'AdminApplications',
         component: () => import('../views/admin/ApplicationsPage.vue'),
       },
-      {
-        path: 'users',
-        name: 'AdminUsers',
-        component: () => import('../views/admin/UsersPage.vue'),
-      },
+
     ],
   },
   {
